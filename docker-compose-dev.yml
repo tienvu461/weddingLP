@@ -1,0 +1,59 @@
+version: '2'
+
+networks:
+    wedding_lp_nw:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: 172.40.2.0/24
+                
+services:
+    web:
+        restart: unless-stopped
+        build:
+            args:
+              SRC_DIR: ./wedding_lp
+            context: .
+            dockerfile: ./infrastructure/docker/web/Dockerfile            
+        entrypoint: /app/docker/web/wsgi-entrypoint.sh
+        env_file:
+            - ./infrastructure/docker/config/dev/.env.web
+        volumes:
+            # - static_volume:/app/web/web_static
+            - ./wedding_lp:/app/wedding_lp
+            # - media_volume:/app/web/web_media
+        expose:
+            - 8000
+        ports:
+            - 8000:8000
+        depends_on: 
+            - postgresql
+        networks:
+            - wedding_lp_nw
+
+    postgresql:
+        restart: unless-stopped
+        build:
+            args:
+              SRC_DIR: ./infrastructure/docker/postgresql
+            context: .
+            dockerfile: ./infrastructure/docker/postgresql/Dockerfile    
+        volumes:
+            - postgresql_volume:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        env_file:
+            - ./infrastructure/docker/config/dev/.env.psql
+        networks:
+            wedding_lp_nw:
+                ipv4_address: 172.40.2.2
+        # environment:
+        #     - POSTGRES_DB=fashion_info_db
+        #     - POSTGRES_USER=fashion_info
+        #     - POSTGRES_PASSWORD=fashion_info
+
+volumes:
+    # static_volume: {}
+    postgresql_volume: {}
+    # media_volume: {}
