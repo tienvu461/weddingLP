@@ -16,6 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from apps.web.urls import urlpatterns as web_urlpatterns
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+
+# add accounts urls to urlpatterns
+urlpatterns += web_urlpatterns
+
+if settings.DEBUG:
+    import debug_toolbar
+
+    urlpatterns += [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ]
