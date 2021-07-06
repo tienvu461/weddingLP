@@ -1,5 +1,6 @@
 #!/bin/sh
 printenv
+echo $APP_ENV
 until cd /app/wedding_lp/
 do
     echo "Waiting for server volume..."
@@ -16,7 +17,7 @@ then
     echo "PostgreSQL started"
 fi
 
-if [ "$(ls -A /app/wedding_lp/apps/wedding_lp/migrations/0*.py| wc -l)" -ge "1" ]; then
+if [ "$(ls -A /app/wedding_lp/apps/web/migrations/0*.py| wc -l)" -ge "1" ]; then
      echo "Migrations exist"
 else
     echo "Making migrations"
@@ -41,6 +42,7 @@ SU_EMAIL = os.environ.get("SU_EMAIL", "admin@example.com")
 User.objects.filter(username=SU_USER).exists() or \
     User.objects.create_superuser(SU_USER, SU_EMAIL, SU_PWD)
 EOF
+
 if [ "$APP_ENV" = "development" ]
 then
     ./manage.py collectstatic --noinput
