@@ -18,9 +18,13 @@ from django.urls import path, include
 from django.conf.urls import url
 from . import settings
 
+from apps.web.urls import urlpatterns as web_urlpatterns
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+
+# add accounts urls to urlpatterns
+urlpatterns += web_urlpatterns
 
 if settings.DEBUG:
     import debug_toolbar
